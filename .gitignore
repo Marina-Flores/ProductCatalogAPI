@@ -1,0 +1,20 @@
+# Arquivos de configuração
+ProductCatalog.API/appsettings.json
+ProductCatalog.Data/appsettings.json
+appsettings.Development.json
+
+# Arquivos de compilação
+*.dll
+*.exe
+*.pdb
+
+# Pasta de binários
+bin/
+
+# Pasta de objetos
+obj/
+
+# Arquivos temporários
+[Tt]emp/
+
+/.vs/
