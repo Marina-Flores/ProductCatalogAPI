@@ -24,9 +24,14 @@ namespace ProductCatalog.API.Controllers
         }
 
         [HttpGet("GetByID/{id}")]
-        public async Task<Product> GetByID([FromRoute] int id)
+        public async Task<IActionResult> GetByID([FromRoute] int id)
         {
-            return await _productService.GetByIdAsync(id);
+            var product = await _productService.GetByIdAsync(id);
+
+            if(product == null) 
+                return NotFound();
+
+            return Ok(product);
         }
 
         [HttpPut("Update")]
