@@ -23,5 +23,30 @@ namespace ProductCatalog.API.Controllers
             return await _productService.GetAllAsync();
         }
 
+        [HttpGet("GetByID/{id}")]
+        public async Task<Product> GetByID([FromRoute] int id)
+        {
+            return await _productService.GetByIdAsync(id);
+        }
+
+        [HttpPut("Update")]
+        public async Task<int> Update([FromBody] Product product)
+        {
+            return await _productService.UpdateAsync(product);
+        }
+
+        [HttpPost("Insert")]
+        public async Task<int> Insert([FromBody] Product product)
+        {
+            return await _productService.InsertAsync(product);
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<int> Delete([FromRoute] int id)
+        {
+            return await _productService.DeleteByIdAsync(id); 
+        }
+
+
     }
 }

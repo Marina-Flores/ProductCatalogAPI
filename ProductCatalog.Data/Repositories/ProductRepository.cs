@@ -15,14 +15,19 @@ namespace ProductCatalog.Data.Repositories
 
         public ProductRepository(IConfiguration configuration)
         {
-            _configuration = configuration;
-            var connectionString = configuration.GetConnectionString("ProductCatalog");
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            var connectionString = _configuration.GetConnectionString("ProductCatalog");
             _db = new SqlConnection(connectionString);
         }
 
-        public Task<int> DeleteByIdAsync(int id)
+        public async Task<int> DeleteByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            using IDbConnection db = _db;
+
+            string query = "DELETE FROM Product WHERE ID = @Id";
+            var rowsAffected = await db.ExecuteAsync(query, new { Id = id });
+
+            return rowsAffected;
         }
 
         public async Task<List<Product>> GetAllAsync()
@@ -34,19 +39,82 @@ namespace ProductCatalog.Data.Repositories
             return (await db.QueryAsync<Product>(query)).ToList();
         }
 
-        public Task<Product> GetByIdAsync(int id)
+        public async Task<Product> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            using IDbConnection db = _db;
+
+            string query = "SELECT * FROM Product WHERE ID = @Id";
+
+            return await db.QueryFirstOrDefaultAsync<Product>(query);
         }
 
-        public Task<int> InsertAsync(Product product)
+        public async Task<int> InsertAsync(Product product)
         {
-            throw new NotImplementedException();
+            string query = @"INSERT INTO
+                                    Product (
+                                        Name,
+                                        Description,
+                                        Price,
+                                        Category,
+                                        Stock
+                                    )
+                                VALUES
+                                    (
+                                        @Name,
+                                        @Description,
+                                        @Price,
+                                        @Category,
+                                        @Stock
+                                    )";
+
+            var parameters = new
+            {
+                product.Name,
+                product.Description,
+                product.Price,
+                product.Category,
+                product.Stock
+            };
+
+            using IDbConnection db = _db;
+
+            return await db.ExecuteAsync(query, parameters);
         }
 
-        public Task<int> UpdateAsync(Product product)
+        public async Task<int> UpdateAsync(Product product)
         {
-            throw new NotImplementedException();
+
+            string query = @"UPDATE Product SET ";
+
+            if (!string.IsNullOrEmpty(product.Name))
+                query += "Name = @Name, ";
+
+            if (!string.IsNullOrEmpty(product.Description))
+                query += "Description = @Description, ";
+            
+            if (product.Price > 0)
+                query += "Price = @Price, ";
+
+            if (!string.IsNullOrEmpty(product.Category))
+                query += "Category = @Category, ";
+
+            if (product.Stock > 0)
+                query += "Stock = @Stock, ";
+
+            query += "UpdatedOn = GETDATE() WHERE ID = @ID";
+
+            var parameters = new
+            {
+                product.ID,
+                product.Name,
+                product.Description,
+                product.Price,
+                product.Category,
+                product.Stock
+            };
+
+            using IDbConnection db = _db; 
+            return await db.ExecuteAsync(query, parameters);
         }
     }
 }
