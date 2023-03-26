@@ -1,16 +1,20 @@
 # ProductCatalog
-O ProductCatalog é um projeto de estudo para aprimorar habilidades em desenvolvimento de aplicações web utilizando o framework .NET Core.
+The ProductCatalog is a study project aimed at improving skills in web application development using the .NET Core framework.
 
-## Objetivos
-### O objetivo principal desse projeto é desenvolver uma aplicação de catálogo de produtos, utilizando as seguintes tecnologias e conceitos:
+## Objectives
+### The main objective of this project is to develop a product catalog application using the following technologies and concepts:
 
-* ASP.NET Core: para o desenvolvimento da aplicação web;
-* Dapper: para o acesso ao banco de dados e execução de queries;
-* SQL Server: para o armazenamento dos dados;
-* Repository Pattern: para separação de responsabilidades e organização do código;
+* ASP.NET Core: for web application development;
+* Dapper: for database access and query execution;
+* SQL Server: for data storage;
+* Repository Pattern: for separation of concerns and code organization;
 
-## Funcionalidades
-### A aplicação terá as seguintes funcionalidades:
+## Features
+### The application will have the following features:
 
-* Cadastro, edição e remoção de produtos;
-* Listagem de todos os produtos cadastrados;
+* Product registration, editing, and removal;
+* Listing of all registered products;
+
+
+
+
