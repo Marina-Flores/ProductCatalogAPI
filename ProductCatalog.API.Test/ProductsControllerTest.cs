@@ -9,11 +9,13 @@ namespace ProductCatalog.API.Test
     public class ProductsControllerTest
     {
         private readonly Mock<IProductService> _productServiceMock;
+        private readonly Mock<List<Product>> _listProductMock;
         private readonly ProductsController _controller;
 
         public ProductsControllerTest()
         {
             _productServiceMock = new Mock<IProductService>();
+            _listProductMock = new Mock<List<Product>>();
             _controller = new ProductsController( _productServiceMock.Object );
         }
 
@@ -22,7 +24,7 @@ namespace ProductCatalog.API.Test
         {
             // Arrange
             int productId = 1;
-            Product expectedProduct = new Product { ID = productId, Name = "Cookie" };
+            Product expectedProduct = new() { ID = productId, Name = "Cookie" };
             _productServiceMock.Setup(x => x.GetByIdAsync(productId)).ReturnsAsync(expectedProduct);
 
             // Act
@@ -50,5 +52,41 @@ namespace ProductCatalog.API.Test
             // Assert
             Assert.IsType<NotFoundResult>( result );
         }
+
+        [Fact]
+        public async Task GetAll_ReturnsNoContentWhenListIsEmpty()
+        {
+            // Arrange
+            var expectedList = new List<Product>();
+            _productServiceMock.Setup(x => x.GetAllAsync()).ReturnsAsync(expectedList);
+
+            // Act
+            var result = await _controller.GetAll();
+
+            // Assert 
+            Assert.IsType<NoContentResult>( result );
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsProductsListWhenListIsNotEmpty()
+        {
+            // Arrange
+            var expectedList = _listProductMock.Object;
+            _productServiceMock.Setup(x => x.GetAllAsync()).ReturnsAsync(expectedList);
+
+            // Act
+            var result = await _controller.GetAll();
+
+            // Assert 
+            Assert.IsType<OkObjectResult>( result );
+
+            var okObjectResult = result as OkObjectResult;
+            Assert.IsType<List<Product>>( okObjectResult?.Value );
+
+            var productList = okObjectResult?.Value as List<Product>; 
+            Assert.NotNull( productList );
+            Assert.NotEmpty( productList );        
+        }
+
     }
 }

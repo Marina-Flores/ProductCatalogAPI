@@ -18,9 +18,14 @@ namespace ProductCatalog.API.Controllers
         }
 
         [HttpGet("GetAll")]
-        public async Task<List<Product>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return await _productService.GetAllAsync();
+            var products = await _productService.GetAllAsync();
+
+            if (!products.Any())
+                return NoContent();
+
+            return Ok(products);
         }
 
         [HttpGet("GetByID/{id}")]
