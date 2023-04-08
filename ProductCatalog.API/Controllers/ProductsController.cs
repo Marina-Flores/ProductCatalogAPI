@@ -40,9 +40,18 @@ namespace ProductCatalog.API.Controllers
         }
 
         [HttpPut("Update")]
-        public async Task<int> Update([FromBody] Product product)
+        public async Task<IActionResult> Update([FromBody] Product product)
         {
-            return await _productService.UpdateAsync(product);
+            try
+            {                
+                var updatedProduct = await _productService.UpdateAsync(product);
+
+                return StatusCode(200, "The product was successfuly updated!");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occured while updating the product: {ex}");
+            }           
         }
 
         [HttpPost("Insert")]

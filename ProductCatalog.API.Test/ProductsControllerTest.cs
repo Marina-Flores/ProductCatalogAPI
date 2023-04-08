@@ -10,12 +10,14 @@ namespace ProductCatalog.API.Test
     {
         private readonly Mock<IProductService> _productServiceMock;
         private readonly Mock<List<Product>> _listProductMock;
+        private readonly Mock<Product> _productMock;
         private readonly ProductsController _controller;
 
         public ProductsControllerTest()
         {
             _productServiceMock = new Mock<IProductService>();
             _listProductMock = new Mock<List<Product>>();
+            _productMock = new Mock<Product>();
             _controller = new ProductsController( _productServiceMock.Object );
         }
 
@@ -71,9 +73,9 @@ namespace ProductCatalog.API.Test
         public async Task GetAll_ReturnsProductsListWhenListIsNotEmpty()
         {
             // Arrange
-            var expectedList = _listProductMock.Object;
-            _productServiceMock.Setup(x => x.GetAllAsync()).ReturnsAsync(expectedList);
-
+            var list = new List<Product> { new Product { ID = 1, Name = "Product 1" } };           
+            _productServiceMock.Setup(x => x.GetAllAsync()).ReturnsAsync(list);
+           
             // Act
             var result = await _controller.GetAll();
 
@@ -86,6 +88,40 @@ namespace ProductCatalog.API.Test
             var productList = okObjectResult?.Value as List<Product>; 
             Assert.NotNull( productList );
             Assert.NotEmpty( productList );        
+        }
+
+        [Fact]
+        public async Task Update_ReturnsOkWhenTheProductWasSuccessfullyUpdated()
+        {
+            // Arrage
+            var product = _productMock.Object;
+
+            // Act
+            var result = await _controller.Update(product);
+
+            // Assert
+            var objectResult = (ObjectResult)result;
+
+            Assert.IsType<ObjectResult>(result);
+            Assert.Equal(200, objectResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task Update_Returns500WhenAnExceptionIsThrown()
+        {
+            // Arrange 
+            _productServiceMock
+                     .Setup(x => x.UpdateAsync(It.IsAny<Product>()))
+                     .ThrowsAsync(new Exception("Something went wrong."));
+
+            // Act
+            var result = await _controller.Update(new Product());
+
+            // Assert
+            var objectResult = (ObjectResult)result;
+
+            Assert.IsType<ObjectResult>( result );
+            Assert.Equal(500, objectResult.StatusCode);
         }
 
     }
