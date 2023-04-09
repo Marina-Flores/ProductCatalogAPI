@@ -55,9 +55,21 @@ namespace ProductCatalog.API.Controllers
         }
 
         [HttpPost("Insert")]
-        public async Task<int> Insert([FromBody] Product product)
+        public async Task<ActionResult<Product>> Insert([FromBody] Product product)
         {
-            return await _productService.InsertAsync(product);
+            try
+            {
+                var insertedProduct = await _productService.InsertAsync(product);
+
+                return CreatedAtAction(nameof(GetByID), new { id = insertedProduct }, insertedProduct);
+            }
+            catch (Exception ex)
+            {
+                return Problem(
+                            detail: $"An error ocurred while creating the product: {ex}", 
+                            title: "Internal Server Error", 
+                            statusCode: 500);
+            }
         }
 
         [HttpDelete("Delete/{id}")]

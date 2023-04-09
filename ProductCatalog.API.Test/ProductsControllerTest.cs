@@ -124,5 +124,36 @@ namespace ProductCatalog.API.Test
             Assert.Equal(500, objectResult.StatusCode);
         }
 
+        [Fact]
+        public async Task Insert_Returns500WhenAnExceptionIsThown()
+        {
+            // Arrange
+            _productServiceMock
+                    .Setup(x => x.InsertAsync(It.IsAny<Product>()))
+                    .ThrowsAsync(new Exception("Something went wrong."));
+
+            // Act
+            var result = await _controller.Insert(new Product());
+
+            // Assert
+            var exceptionResult = Assert.IsType<ActionResult<Product>>(result);
+            Assert.IsType<ObjectResult>(exceptionResult.Result);
+
+            Assert.Equal(500, ((ObjectResult)exceptionResult.Result).StatusCode);
+        }
+
+        [Fact]
+        public async Task Insert_Returns201WhenTheProductWasSuccessfullyCreated()
+        {
+            // Arrange 
+            var product = _productMock.Object;
+
+            // Act
+            var result = await _controller.Insert(product);
+
+            // Assert
+            var createdResult = Assert.IsType<CreatedAtActionResult>( result.Result );
+            Assert.Equal(201, createdResult.StatusCode);        
+        }
     }
 }
